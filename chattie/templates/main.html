@@ -15,7 +15,13 @@
         <title>Chattie</title>
     {% endif %}
 </head>
-<body>
+<body class='d-flex flex-column min-vh-100 '>
+
+    {% include "layout/navbar.html" %}
     
+    {% include "layout/logo.html" %}
+        {% block content %}
+        {% endblock %}
+    {% include "layout/footer.html" %}
 </body>
 </html>

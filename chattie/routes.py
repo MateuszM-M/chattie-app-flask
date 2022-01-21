@@ -1,8 +1,9 @@
 from chattie import app
+from flask import render_template
 
 @app.route("/")
 def home():
-    return "<h1>Home Page. There will be login or room management page</h1>"
+    return render_template('home.html')
 
 
 @app.route("/register")
@@ -30,16 +31,16 @@ def create_room():
     return "<h1>Home Page</h1>"
 
 
-@app.route("/<room>")
-def room():
-    return "<h1>Home Page</h1>"
+# @app.route("/<room>")
+# def room():
+#     return "<h1>Home Page</h1>"
 
 
-@app.route("/update/<room>")
-def update_room():
-    return "<h1>Home Page</h1>"
+# @app.route("/update/<room>")
+# def update_room():
+#     return "<h1>Home Page</h1>"
 
 
-@app.route("/delete/<room>")
-def delete_room():
-    return "<h1>Home Page</h1>"
+# @app.route("/delete/<room>")
+# def delete_room():
+#     return "<h1>Home Page</h1>"

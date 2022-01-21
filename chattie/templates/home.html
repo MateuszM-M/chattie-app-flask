@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="container d-flex justify-content-around my-auto">
+    <div class="card col-md-4 bg-dark p-3">        
+        <main class="form-signin">
+            <form>
+                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+                <div class="form-floating">
+                    <input type="email" class="form-control bg-dark" id="floatingInput" placeholder="name@example.com">
+                    <label for="floatingInput">Email address</label>
+                </div>
+                <div class="form-floating">
+                    <input type="password" class="form-control bg-dark" id="floatingPassword" placeholder="Password">
+                    <label for="floatingPassword">Password</label>
+                </div>
+
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+                <p class="mt-5 mb-3 text-muted">Register</p>
+            </form>
+        </main>
+    </div>
+
+    <div class="card col-md-4 bg-dark p-3"> 
+    </div>
+
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+body {
+    background-color: #444;
+    color: whitesmoke;
+}
+
+#logo {
+    text-align: center;
+}
+
+a {
+    color: azure;
+    text-decoration: none;
+}
+
+a:hover {
+    color:azure;
+}
