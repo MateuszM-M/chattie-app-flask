@@ -2,27 +2,61 @@
 {% block content %}
 
 <div class="container d-flex justify-content-around my-auto">
-    <div class="card col-md-4 bg-dark p-3">        
+    <div class="card col-md-4 bg-dark">        
         <main class="form-signin">
             <form>
-                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-
-                <div class="form-floating">
-                    <input type="email" class="form-control bg-dark" id="floatingInput" placeholder="name@example.com">
-                    <label for="floatingInput">Email address</label>
-                </div>
-                <div class="form-floating">
-                    <input type="password" class="form-control bg-dark" id="floatingPassword" placeholder="Password">
-                    <label for="floatingPassword">Password</label>
+                <div class="card text-center bg-dark">
+                    <h3 class=" fw-normal card-text card-header">Log in</h3>
                 </div>
 
-                <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-                <p class="mt-5 mb-3 text-muted">Register</p>
+                <div class="p-5">
+                    <div class="form-floating">
+                        <input type="email" class="form-control bg-dark" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Email address</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="password" class="form-control bg-dark" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Password</label>
+                    </div>
+
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+
+                    <div class="mx-auto">
+                        <div class="text-center">
+                            <a class="link-secondary" href="">Register</a>
+                        </div>
+                        <div class="text-center">
+                            <a class="link-secondary" href="">Forgot password</a>
+                        </div>
+                    </div>
+                </div>
             </form>
         </main>
     </div>
 
-    <div class="card col-md-4 bg-dark p-3"> 
+    <div class="card col-md-4 bg-dark"> 
+            <main class="form-signin">
+            <form>
+                <div class="card text-center bg-dark">
+                    <h3 class=" fw-normal card-text card-header">Enter as guest</h3>
+                </div>
+
+                <div class="p-5">
+                    <div class="form-floating">
+                        <input type="email" class="form-control bg-dark" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Nick</label>
+                    </div>
+
+
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">Enter</button>
+
+
+                    </div>
+                </div>
+            </form>
+        </main>
+
     </div>
 
 
