@@ -14,11 +14,16 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
-    rooms = db.relationship('Room')
-    messages = db.relationship('Message')
-    participates_in = db.Column(db.Integer, db.ForeignKey('room.id'))
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+    participates_in = db.Column(db.Integer, db.ForeignKey('room.id'))
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'))
+    message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
+    
+    rooms = db.relationship('Room', foreign_keys=[room_id])
+    messages = db.relationship('Message', foreign_keys=[message_id])
+    
+    
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
@@ -26,8 +31,13 @@ class User(db.Model, UserMixin):
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
-    participants = db.relationship('User')
-    messages = db.relationship('Message')
+    
+    participant_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
+    
+    participants = db.relationship('User', foreign_keys=[participant_id])
+    messages = db.relationship('Message', foreign_keys=[message_id])
+    
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
@@ -38,7 +48,7 @@ class Room(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    room = db.Column(db.Integer, db.ForeignKey('room.id'))
+    room = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     message = db.Column(db.String(1000), nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
