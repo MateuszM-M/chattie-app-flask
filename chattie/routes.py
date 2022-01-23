@@ -1,14 +1,8 @@
-from chattie import app
-from flask import render_template, flash, redirect
+from chattie import app, bcrypt, db
+from flask import render_template, flash, redirect, url_for, request
 from chattie.forms import LoginForm, RegistrationForm
 from flask_login import login_user, current_user, logout_user, login_required
-
-
-@app.route("/")
-def home():
-    login_form = LoginForm()
-    
-    return render_template('home.html', title='Home', login_form=login_form)
+from .models import User
 
 
 @app.route("/login", methods=['POST', 'GET'])
@@ -25,7 +19,16 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
-    return render_template('home.html', title='login', login_form=login_form)
+    return render_template('login.html', title='login', login_form=login_form)
+
+
+@app.route("/")
+def home():
+    
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    
+    return render_template('home.html', title='home')
 
 
 @app.route("/logout")
