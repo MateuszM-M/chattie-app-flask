@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from chattie.models import User
+from chattie.models import User, Room
 
 
 class RegistrationForm(FlaskForm):
@@ -30,3 +30,13 @@ class LoginForm(FlaskForm):
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
+    
+    
+class CreateRoomForm(FlaskForm):
+    name = StringField('Room name', validators=[DataRequired()])
+    submit = SubmitField('Create')
+    
+    def validate_name(self, name):
+        name = Room.query.filter_by(name=name.data).first()
+        if name:
+            raise ValidationError('That username is taken. Please choose a different one.')

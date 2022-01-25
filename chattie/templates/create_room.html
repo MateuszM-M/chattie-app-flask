@@ -1,0 +1,38 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="container d-flex justify-content-around my-auto">
+    <div class="card col-md-6 bg-dark">
+        <div class="card text-center bg-dark">
+            <h3 class=" fw-normal card-text card-header ">Create a room</h3>
+        </div>
+
+        <div class="p-5">
+            <form action="{{ url_for('create_room')}}" method="POST">
+                {{ form.hidden_tag() }}
+                <div class="form-floating my-2">
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control bg-dark is-invalid text-white", placeholder="Room name") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control bg-dark text-white", placeholder="Room name") }}
+                    {% endif %}
+                    {{ form.name.label(class="form-control-label") }}
+                </div>
+                <div class='text-center'>
+                    {{ form.submit(class="btn btn-primary mt-2") }}
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{% endblock %}

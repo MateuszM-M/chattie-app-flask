@@ -1,8 +1,8 @@
 from chattie import app, bcrypt, db
 from flask import render_template, flash, redirect, url_for, request
-from chattie.forms import LoginForm, RegistrationForm
+from chattie.forms import LoginForm, RegistrationForm, CreateRoomForm
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User
+from .models import User, Room
 
 
 @app.route("/login", methods=['POST', 'GET'])
@@ -24,11 +24,11 @@ def login():
 
 @app.route("/")
 def home():
-    
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
+    rooms = Room.query.all()
     
-    return render_template('home.html', title='home')
+    return render_template('home.html', title='home', rooms=rooms)
 
 
 @app.route("/logout")
@@ -67,9 +67,17 @@ def reset_password():
     return "<h1>reset password </h1>"
 
 
-@app.route("/create-room")
+@app.route("/create-room", methods=['GET', 'POST'])
+@login_required
 def create_room():
-    return "<h1>Home Page</h1>"
+    form = CreateRoomForm()
+    if form.validate_on_submit():
+        room = Room(name=form.name.data, creator_id=current_user.id)
+        db.session.add(room)
+        db.session.commit()
+        flash(f"Your room:{room.name} has been created!", 'success')
+        return redirect(url_for('home'))    
+    return render_template('create_room.html', title='Create_room', form=form)
 
 
 # @app.route("/<room>")
