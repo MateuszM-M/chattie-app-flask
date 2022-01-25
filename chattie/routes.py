@@ -80,9 +80,10 @@ def create_room():
     return render_template('create_room.html', title='Create_room', form=form)
 
 
-# @app.route("/<room>")
-# def room():
-#     return "<h1>Home Page</h1>"
+@app.route("/r/<room_name>")
+def room(room_name):
+    room = Room.query.filter_by(name=room_name).first()
+    return render_template('room.html', title=room.name, room=room)
 
 
 # @app.route("/update/<room>")
