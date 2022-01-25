@@ -1,5 +1,5 @@
 from chattie import app, bcrypt, db
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from chattie.forms import LoginForm, RegistrationForm, CreateRoomForm
 from flask_login import login_user, current_user, logout_user, login_required
 from .models import User, Room
@@ -81,6 +81,7 @@ def create_room():
 
 
 @app.route("/r/<room_name>")
+@login_required
 def room(room_name):
     room = Room.query.filter_by(name=room_name).first()
     return render_template('room.html', title=room.name, room=room)
@@ -91,6 +92,19 @@ def room(room_name):
 #     return "<h1>Home Page</h1>"
 
 
-# @app.route("/delete/<room>")
-# def delete_room():
-#     return "<h1>Home Page</h1>"
+@app.route("/delete/<room_name>", methods=['GET', 'POST'])
+@login_required
+def delete_room(room_name):
+    
+    room = Room.query.filter_by(name=room_name).first()
+    
+    if request.method == 'POST':
+        if room.creator_id != current_user.id:
+            abort(403)
+        db.session.delete(room)
+        db.session.commit()
+        flash(f"{room.name} has been deleted!", 'success')
+        return redirect(url_for('home'))
+    
+    
+    return render_template('delete_room.html', title=f"delete {room.name}", room=room)
