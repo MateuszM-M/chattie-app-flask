@@ -87,9 +87,25 @@ def room(room_name):
     return render_template('room.html', title=room.name, room=room)
 
 
-# @app.route("/update/<room>")
-# def update_room():
-#     return "<h1>Home Page</h1>"
+@app.route("/update/<room_name>", methods=['GET', 'POST'])
+@login_required
+def update_room(room_name):
+
+    room = Room.query.filter_by(name=room_name).first()
+    
+    if request.method == 'POST':
+        if room.creator_id != current_user.id:
+            abort(403)
+    
+    form = CreateRoomForm()
+    if form.validate_on_submit():
+        room.name = form.name.data
+        db.session.commit()
+        flash(f"Your room:{room.name} has been updated!", 'success')
+        return redirect(url_for('home'))
+    elif request.method == 'GET':
+        form.name.data = room.name
+    return render_template('create_room.html', title='Update_room', form=form)
 
 
 @app.route("/delete/<room_name>", methods=['GET', 'POST'])
