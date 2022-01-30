@@ -48,9 +48,12 @@ class Room(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    room = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     message = db.Column(db.String(1000), nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    user = db.relationship('User', foreign_keys=[user_id])
+    room = db.relationship('Room', foreign_keys=[room_id])
 
     def __repr__(self):
         return f"('{self.user_id}': '{self.message}')"
