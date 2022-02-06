@@ -1,9 +1,12 @@
+from flask import abort, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
+from flask_socketio import send
+
 from chattie import app, bcrypt, db, socketio
-from flask import render_template, flash, redirect, url_for, request, abort
-from chattie.forms import (LoginForm, RegistrationForm, CreateRoomForm, 
-                           AddMessageForm)
-from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, Room, Message
+from chattie.forms import (AddMessageForm, CreateRoomForm, LoginForm,
+                           RegistrationForm)
+
+from .models import Message, Room, User
 
 
 @app.route("/login", methods=['POST', 'GET'])
@@ -85,18 +88,7 @@ def create_room():
 @login_required
 def room(room_name):
     room = Room.query.filter_by(name=room_name).first()
-    
     form = AddMessageForm()
-    if form.validate_on_submit():
-        message = Message(
-            user_id=current_user.id,
-            room_id=room.id,
-            message=form.message.data
-        )
-        db.session.add(message)
-        db.session.commit()
-        form.message.data=""
-        
     messages = Message.query.filter_by(room=room)
     return render_template('room.html', 
                            title=room.name, 
@@ -105,9 +97,15 @@ def room(room_name):
                            messages=messages)
 
 
-@socketio.on('message')
+@socketio.on('message', namespace='/r/Mateusz')
 def handle_message(msg):
     print('Message: ' + msg)
+    message = Message(
+        user_id=current_user.id,
+        room_id=1,
+        message=msg)
+    db.session.add(message)
+    db.session.commit()
     send(msg, broadcast=True)
 
 

@@ -8,23 +8,25 @@
         </div>
         <div class="p-5">
 
-        <div id="messages">
+        <ul id="messages">
         {% for message in messages %}
-            <p>{{ message }}</p>
+            <p>{{ message.message }}</p>
         {% endfor %}
-        </div>
+        </ul>
 
 
-        <form action="" method="POST">
-        {{ form.hidden_tag() }}
-        <div class="form-floating my-2">
-        {{ form.message(class="form-control bg-dark text-white", placeholder="Message") }}
-        {{ form.message.label(class="form-control-label") }}
-        </div>
-        <div class='text-center'>
-            {{ form.submit(class="btn btn-primary mt-2") }}
-        </div>
-        </form>
+        <!--<form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-floating my-2">
+                {{ form.message(class="form-control bg-dark text-white", placeholder="Message", id="myMessage") }}
+                {{ form.message.label(class="form-control-label") }}
+            </div>
+            <div class='text-center'>
+                {{ form.submit(class="btn btn-primary mt-2", id="sendbutton") }}
+            </div>
+        </form>-->
+        <input type="text" id="myMessage">
+        <button id="sendbutton">Send</button>
         </div>
 
     </div>
@@ -43,6 +45,29 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript">
 
+    var socket = io.connect('http://127.0.0.1:5000/r/Mateusz');
+
+    socket.on('connect', function() {
+        socket.send('User has connected!');
+    });
+
+    socket.on('message', function(msg) {
+        console.log(msg)
+        document.getElementById('messages').innerHTML += '<p>'+msg+'</p>';
+    });
+
+    document.getElementById('sendbutton').addEventListener('click', sendMessage);
+    
+    
+    function sendMessage() {
+        x = socket.send(document.getElementById('myMessage').value);
+        console.log(x)
+        document.getElementById('myMessage').value = "";
+    };
+
+</script>
 
 {% endblock %}

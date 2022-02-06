@@ -43,5 +43,5 @@ class CreateRoomForm(FlaskForm):
         
     
 class AddMessageForm(FlaskForm):
-    message = StringField('Message', validators=[DataRequired()])
+    message = StringField('Message')
     submit = SubmitField('Send')
