@@ -40,8 +40,3 @@ class CreateRoomForm(FlaskForm):
         name = Room.query.filter_by(name=name.data).first()
         if name:
             raise ValidationError('That name is taken. Please choose a different one.')
-        
-    
-class AddMessageForm(FlaskForm):
-    message = StringField('Message')
-    submit = SubmitField('Send')

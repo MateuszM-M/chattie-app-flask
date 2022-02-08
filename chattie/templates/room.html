@@ -8,25 +8,22 @@
         </div>
         <div class="p-5">
 
-        <ul id="messages">
-        {% for message in messages %}
-            <p>{{ message.message }}</p>
-        {% endfor %}
-        </ul>
+            <ul id="messages" class="mh-50 overflow-auto">
+                {% for message in messages %}
+                    <p>{{ message.message }}</p>
+                {% endfor %}
+            </ul>
 
+            <form onsubmit="return false">
 
-        <!--<form action="" method="POST">
-            {{ form.hidden_tag() }}
-            <div class="form-floating my-2">
-                {{ form.message(class="form-control bg-dark text-white", placeholder="Message", id="myMessage") }}
-                {{ form.message.label(class="form-control-label") }}
-            </div>
-            <div class='text-center'>
-                {{ form.submit(class="btn btn-primary mt-2", id="sendbutton") }}
-            </div>
-        </form>-->
-        <input type="text" id="myMessage">
-        <button id="sendbutton">Send</button>
+                <div class="my-2 input-group">
+                    <input type="text" class="form-control bg-dark text-white" placeholder="Message" id="myMessage">
+                    <div class="input-group-append">
+                        <button id="sendbutton" class="btn btn-outline-secondary">Send</button>
+                    </div>
+                </div>
+
+            </form>
         </div>
 
     </div>
@@ -49,24 +46,25 @@
 <script type="text/javascript">
 
     var socket = io.connect('http://127.0.0.1:5000/r/Mateusz');
+    const messages = document.getElementById('messages')
+    const button = document.getElementById('sendbutton')
 
     socket.on('connect', function() {
         socket.send('User has connected!');
     });
 
     socket.on('message', function(msg) {
-        console.log(msg)
-        document.getElementById('messages').innerHTML += '<p>'+msg+'</p>';
+        messages.innerHTML += '<p>'+msg+'</p>';
+        messages.scrollTop = messages.scrollHeight;
     });
 
-    document.getElementById('sendbutton').addEventListener('click', sendMessage);
-    
+    button.addEventListener('click', sendMessage);
     
     function sendMessage() {
-        x = socket.send(document.getElementById('myMessage').value);
-        console.log(x)
+        socket.send(document.getElementById('myMessage').value);
         document.getElementById('myMessage').value = "";
     };
+
 
 </script>
 

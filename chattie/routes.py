@@ -3,7 +3,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from flask_socketio import send
 
 from chattie import app, bcrypt, db, socketio
-from chattie.forms import (AddMessageForm, CreateRoomForm, LoginForm,
+from chattie.forms import (CreateRoomForm, LoginForm,
                            RegistrationForm)
 
 from .models import Message, Room, User
@@ -88,12 +88,10 @@ def create_room():
 @login_required
 def room(room_name):
     room = Room.query.filter_by(name=room_name).first()
-    form = AddMessageForm()
     messages = Message.query.filter_by(room=room)
     return render_template('room.html', 
                            title=room.name, 
-                           room=room, 
-                           form=form,
+                           room=room,
                            messages=messages)
 
 
