@@ -1,6 +1,6 @@
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from flask_socketio import send
+from flask_socketio import send, emit
 
 from chattie import app, bcrypt, db, socketio
 from chattie.forms import (CreateRoomForm, LoginForm,
@@ -26,13 +26,19 @@ def login():
     return render_template('login.html', title='login', login_form=login_form)
 
 
+clients = ["foo", "bar"]
+
 @app.route("/")
 def home():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     rooms = Room.query.all()
+    global clients
     
-    return render_template('home.html', title='home', rooms=rooms)
+    return render_template('home.html', 
+                           title='home', 
+                           rooms=rooms,
+                           clients=clients)
 
 
 @app.route("/logout")
@@ -93,6 +99,25 @@ def room(room_name):
                            title=room.name, 
                            room=room,
                            messages=messages)
+
+
+    
+    
+@socketio.on('connect')
+def handle_connect():
+    username = current_user.username
+    global clients
+    if not username in clients:
+        clients.append(username)
+    emit('user', clients, broadcast=True)
+    
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    username = current_user.username
+    global clients
+    clients.remove(username)
+    emit('user', clients, broadcast=True)
 
 
 @socketio.on('message', namespace='/r/Mateusz')
