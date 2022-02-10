@@ -42,6 +42,36 @@
 
 </div>
 
+<script type="text/javascript">
 
+    let namespace = window.location.pathname
+    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace)
+
+    const messages = document.getElementById('messages')
+    const button = document.getElementById('sendbutton')    
+
+    socket.on('connect', function() {
+        socket.send('{{current_user.username}} has connected!');
+    });
+
+    socket.on('disconnect', function() {
+        socket.send('{{current_user.username}} has left the chat');
+    });
+
+
+    socket.on('message', function(msg) {
+        messages.innerHTML += '<p>'+msg+'</p>';
+        messages.scrollTop = messages.scrollHeight;
+    });
+
+    button.addEventListener('click', sendMessage);
+    
+    function sendMessage() {
+        socket.send(document.getElementById('myMessage').value);
+        document.getElementById('myMessage').value = "";
+    };
+
+
+</script>
 
 {% endblock %}

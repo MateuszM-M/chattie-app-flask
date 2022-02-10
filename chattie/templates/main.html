@@ -7,7 +7,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
     {% if title %}
@@ -25,50 +25,7 @@
         {% endblock %}
     {% include "layout/footer.html" %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script type="text/javascript">
 
-
-    let namespace = "/"
-    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace)
-
-    const messages = document.getElementById('messages')
-    const button = document.getElementById('sendbutton')
-    const users = document.getElementById('users')
-
-    socket.on('connect', function() {
-        socket.send('User has connected!');
-    });
-
-    socket.on('disconnect', function() {
-        console.log("disconnected from sockets")
-    });
-
-
-    socket.on('user', function(clients) {
-        div = []
-        clients.forEach(function (item) {
-            div.push(`<div class="card bg-dark border-light p-1 m-1">${item}</div>`)
-            console.log(item)
-        })
-        users.innerHTML = div.join("")
-    });
-
-    /*
-    socket.on('message', function(msg) {
-        messages.innerHTML += '<p>'+msg+'</p>';
-        messages.scrollTop = messages.scrollHeight;
-    });
-
-    button.addEventListener('click', sendMessage);
-    
-    function sendMessage() {
-        socket.send(document.getElementById('myMessage').value);
-        document.getElementById('myMessage').value = "";
-    };
-*/
-
-</script>
 
 </body>
 </html>

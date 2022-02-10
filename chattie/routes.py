@@ -130,6 +130,22 @@ def handle_message(msg):
     db.session.add(message)
     db.session.commit()
     send(msg, broadcast=True)
+    
+    
+@socketio.on('join', namespace="r/Mateusz")
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    send(username + ' has entered the room.', to=room)
+    
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room.', to=room)
 
 
 @app.route("/update/<room_name>", methods=['GET', 'POST'])

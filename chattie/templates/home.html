@@ -11,7 +11,7 @@
         {% for room in rooms %}
         <div class="list-group">
             <div class="list-group-item list-group-item-action list-group-item-dark my-1 d-flex justify-content-between">
-                <a href="{{ url_for('room', room_name=room.name) }}" >{{ room.name }}</a>
+                <a id="room_join" href="{{ url_for('room', room_name=room.name) }}" >{{ room.name }}</a>
                 {% if room.creator_id == current_user.id %}
                 <div>
                     <a class="btn btn-primary btn-sm" href="{{ url_for('update_room', room_name=room.name) }}" role="button">Edit</a>
@@ -40,4 +40,36 @@
 
 
 </div>
+
+
+<script>
+
+    let namespace = "/"
+    var socket = io.connect('http://' + document.domain + ':' + location.port + namespace)
+
+
+    const users = document.getElementById('users')
+
+    socket.on('connect', function() {
+        socket.send('User has connected!');
+    });
+
+    socket.on('disconnect', function() {
+        console.log("disconnected from sockets")
+    });
+
+
+    socket.on('user', function(clients) {
+        div = []
+        clients.forEach(function (item) {
+            div.push(`<div class="card bg-dark border-light p-1 m-1">${item}</div>`)
+            console.log(item)
+        })
+        users.innerHTML = div.join("")
+    });
+
+
+</script>
+
+
 {% endblock %}
