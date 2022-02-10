@@ -26,12 +26,14 @@
 
     <div class="card col-md-4 bg-dark">
         <div class="card text-center bg-dark">
-            <h3 class=" fw-normal card-text card-header">Users</h3>
+            <h3 class=" fw-normal card-text card-header">Users on-line</h3>
         </div>
 
         <div class="p-5" id="users">
         {% for client in clients %}
-            {{ client }}
+            <div class="card bg-dark border-light p-1 m-1">
+                {{ client }}
+            </div>
         {% endfor %}
         </div>
     </div>  

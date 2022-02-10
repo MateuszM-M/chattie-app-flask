@@ -26,7 +26,7 @@ def login():
     return render_template('login.html', title='login', login_form=login_form)
 
 
-clients = ["foo", "bar"]
+clients = []
 
 @app.route("/")
 def home():

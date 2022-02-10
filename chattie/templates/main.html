@@ -44,9 +44,14 @@
         console.log("disconnected from sockets")
     });
 
-    socket.on('user', function(data) {
-        console.log(data)
-        users.innerHTML = data
+
+    socket.on('user', function(clients) {
+        div = []
+        clients.forEach(function (item) {
+            div.push(`<div class="card bg-dark border-light p-1 m-1">${item}</div>`)
+            console.log(item)
+        })
+        users.innerHTML = div.join("")
     });
 
     /*
