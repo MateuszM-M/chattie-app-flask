@@ -36,3 +36,8 @@ a:hover {
 
 ::-webkit-scrollbar-thumb:hover {
     background-color:#333333;
+}
+
+.cursor-pointer {
+    cursor: pointer;;
+}

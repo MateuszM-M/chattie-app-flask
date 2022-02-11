@@ -99,8 +99,6 @@ def room(room_name):
                            title=room.name, 
                            room=room,
                            messages=messages)
-
-
     
     
 @socketio.on('connect')
@@ -120,7 +118,7 @@ def handle_disconnect():
     emit('user', clients, broadcast=True)
 
 
-@socketio.on('message', namespace='/r/Mateusz')
+@socketio.on('message')
 def handle_message(msg):
     print('Message: ' + msg)
     message = Message(
@@ -132,7 +130,7 @@ def handle_message(msg):
     send(msg, broadcast=True)
     
     
-@socketio.on('join', namespace="r/Mateusz")
+@socketio.on('join')
 def on_join(data):
     username = data['username']
     room = data['room']
