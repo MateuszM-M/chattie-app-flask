@@ -30,13 +30,13 @@ class User(db.Model, UserMixin):
 
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(20), nullable=False, unique=True)
     
     participant_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
     
     participants = db.relationship('User', foreign_keys=[participant_id])
-    messages = db.relationship('Message', foreign_keys=[message_id])
+    messages = db.relationship('Message', foreign_keys=[message_id], cascade="all,delete")
     
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -47,13 +47,13 @@ class Room(db.Model):
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    username = db.Column(db.Integer, db.ForeignKey('user.username'))
+    roomname = db.Column(db.Integer, db.ForeignKey('room.name'), nullable=False)
     message = db.Column(db.String(1000), nullable=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
-    user = db.relationship('User', foreign_keys=[user_id])
-    room = db.relationship('Room', foreign_keys=[room_id])
+    user = db.relationship('User', foreign_keys=[username])
+    room = db.relationship('Room', foreign_keys=[roomname])
 
     def __repr__(self):
-        return f"('{self.user_id}': '{self.message}')"
+        return f"('{self.username}': '{self.message}')"

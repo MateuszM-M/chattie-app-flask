@@ -7,18 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function scrollDownMessages() {
         messages.scrollTop = messages.scrollHeight;
-        myMessage.focus()
-    }
+        myMessage.focus();
+    };
 
-    scrollDownMessages()
+    scrollDownMessages();
 
     button.addEventListener('click', function() {
-        socket.send(myMessage.value);
-        myMessage.value = "";
+            socket.send(myMessage.value, room, username);
+            myMessage.value = "";
     });
 
     socket.on('message', function(msg) {
-        messages.innerHTML += '<p>'+msg+'</p>';
+        if (msg['username']) {
+            messages.innerHTML += `<p> ${msg['username']}: ${msg['message']}</p>`
+        } else {
+            messages.innerHTML += `<p>${msg['message']}</p>`
+        }
         scrollDownMessages()
     });
 
@@ -26,9 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.emit('leave', {'username': username, 'room': room});
     }
 
-    socket.on('disconnect', function() {
-        leaveRoom()
-        console.log('disco')
+    socket.on('connect', function() {
+        console.log(room)
+        socket.emit('join', {'username': username, 'room': room});
     })
+
+    socket.on('disconnect', function() {
+        console.log(log)
+        leaveRoom()
+    });
 
 });

@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let socket = io()
     const users = document.getElementById('users')
-    const usesrname = "{{current_user.username}}"
-
+    
 
     socket.on('user', function(clients) {
         div = []
@@ -17,11 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.room_join').forEach(a => {
         a.onclick = () => {
             let room = a.innerHTML
-            socket.emit('join', {'username': usesrname, 'room': room});
+            socket.emit('join', {'username': username, 'room': room});
         };
     });
-
-
 
 
 });

@@ -1,6 +1,6 @@
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from flask_socketio import send, emit
+from flask_socketio import send, emit, join_room, leave_room
 
 from chattie import app, bcrypt, db, socketio
 from chattie.forms import (CreateRoomForm, LoginForm,
@@ -95,10 +95,12 @@ def create_room():
 def room(room_name):
     room = Room.query.filter_by(name=room_name).first()
     messages = Message.query.filter_by(room=room)
+    users = User.query.all()
     return render_template('room.html', 
                            title=room.name, 
                            room=room,
-                           messages=messages)
+                           messages=messages,
+                           users=users)
     
     
 @socketio.on('connect')
@@ -110,24 +112,26 @@ def handle_connect():
     emit('user', clients, broadcast=True)
     
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    username = current_user.username
-    global clients
-    clients.remove(username)
-    emit('user', clients, broadcast=True)
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     username = current_user.username
+#     global clients
+#     clients.remove(username)
+#     emit('user', clients, broadcast=True)
 
 
 @socketio.on('message')
-def handle_message(msg):
-    print('Message: ' + msg)
-    message = Message(
-        user_id=current_user.id,
-        room_id=1,
-        message=msg)
-    db.session.add(message)
-    db.session.commit()
-    send(msg, broadcast=True)
+def handle_message(msg, room, username=None):
+    roomname = room
+    if msg != "":
+        message = Message(
+            username=username,
+            roomname=roomname,
+            message=msg)
+        db.session.add(message)
+        db.session.commit()
+        message = {'username': message.username, 'message' :message.message}
+        send(message, broadcast=True, to=room)
     
     
 @socketio.on('join')
@@ -135,15 +139,18 @@ def on_join(data):
     username = data['username']
     room = data['room']
     join_room(room)
-    send(username + ' has entered the room.', to=room)
+    message = username + ' has entered the room.'
+    handle_message(msg=message, room=room)
     
 
 @socketio.on('leave')
 def on_leave(data):
+    print('disco')
     username = data['username']
     room = data['room']
     leave_room(room)
-    send(username + ' has left the room.', to=room)
+    message = username + ' has left the room.'
+    handle_message(message)
 
 
 @app.route("/update/<room_name>", methods=['GET', 'POST'])
