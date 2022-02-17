@@ -11,7 +11,7 @@ app.config['SECRET_KEY'] = '3c46ee1eb7ec14e26c429fac7525184531e3d7ef3f514254191c
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 socketio = SocketIO(app)
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch=True)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'

@@ -35,11 +35,15 @@
 
     <div class="card col-md-3 bg-dark">
         <div class="card text-center bg-dark">
-            <h3 class=" fw-normal card-text card-header">Users</h3>
+            <h3 class=" fw-normal card-text card-header">Users in room</h3>
         </div>
 
-        <div class="p-5">
-        There will be users
+        <div class="p-5" id="room_users">
+            {% for user in users %}
+                <div class="card bg-dark border-light p-1 m-1">
+                    {{ user.username }}
+                </div>
+            {% endfor %}
         </div>
     </div>  
 
@@ -48,13 +52,9 @@
 </div>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-
 <script>
     const room = "{{ room.name }}"
     const username = "{{ current_user.username }}"
 </script>
-<script src="{{ url_for('static', filename='js/room.js') }}"></script>
-
 
 {% endblock %}

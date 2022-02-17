@@ -6,7 +6,7 @@ from chattie import app, bcrypt, db, socketio
 from chattie.forms import (CreateRoomForm, LoginForm,
                            RegistrationForm)
 
-from .models import Message, Room, User
+from .models import Message, Room, User, user_identifier
 
 
 @app.route("/login", methods=['POST', 'GET'])
@@ -95,9 +95,9 @@ def create_room():
 def room(room_name):
     room = Room.query.filter_by(name=room_name).first()
     messages = Message.query.filter_by(room=room)
-    users = User.query.all()
+    users = room.participants
     return render_template('room.html', 
-                           title=room.name, 
+                           title=room.name,
                            room=room,
                            messages=messages,
                            users=users)
@@ -105,52 +105,101 @@ def room(room_name):
     
 @socketio.on('connect')
 def handle_connect():
-    username = current_user.username
-    global clients
-    if not username in clients:
-        clients.append(username)
-    emit('user', clients, broadcast=True)
-    
+    try:
+        username = current_user.username
+        global clients
+        if not username in clients:
+            clients.append(username)
+        emit('userlist_update', clients, broadcast=True)
+    except AttributeError:
+        pass
+       
 
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     username = current_user.username
-#     global clients
-#     clients.remove(username)
-#     emit('user', clients, broadcast=True)
+@socketio.on('disconnect')
+def handle_disconnect():
+    try:
+        username = current_user.username
+        global clients
+        clients.remove(username)
+        emit('userlist_update', clients, broadcast=True)
+    except ValueError:
+        pass
+
+
+def create_message(msg, room, username=None):
+    if msg != "":
+        message = Message(
+            username=username,
+            roomname=room,
+            message=msg)
+        db.session.add(message)
+        db.session.commit()
+    return {'username': message.username, 'message': message.message}
 
 
 @socketio.on('message')
 def handle_message(msg, room, username=None):
-    roomname = room
-    if msg != "":
-        message = Message(
-            username=username,
-            roomname=roomname,
-            message=msg)
-        db.session.add(message)
+    message = create_message(msg, room, username)
+    send(message, broadcast=True, to=room)
+    
+    
+def listify(instrumented_list):
+    new_list = []
+    for user in instrumented_list:
+        new_list.append(user.username)
+    return new_list
+        
+        
+@socketio.on('join_room')
+def handle_join(data):
+    username = data['username']
+    roomname = data['room']
+    user_obj = User.query.filter_by(username=username).first()
+    room_obj = Room.query.filter_by(name=roomname).first()
+    room_clients = room_obj.participants
+    
+    join_room(roomname)
+    
+    if user_obj not in room_clients:
+        
+        
+        statement = user_identifier.insert().values(room_name=roomname,
+                                                    user_username=username)
+        db.session.execute(statement)
         db.session.commit()
-        message = {'username': message.username, 'message' :message.message}
-        send(message, broadcast=True, to=room)
+    
+        message = f"{username} has entered the room."
+        handle_message(message, roomname)
+        
+        
+    room_clients = listify(room_clients)
+    print(room_clients)
+    emit('roomlist_update', room_clients)
     
     
-@socketio.on('join')
-def on_join(data):
+@socketio.on('leave_room')    
+def handle_leave(data):
     username = data['username']
-    room = data['room']
-    join_room(room)
-    message = username + ' has entered the room.'
-    handle_message(msg=message, room=room)
-    
+    roomname = data['room']
+    room_obj = Room.query.filter_by(name=roomname).first()
+    user_obj = User.query.filter_by(username=username).first()
+    room_clients = room_obj.participants
 
-@socketio.on('leave')
-def on_leave(data):
-    print('disco')
-    username = data['username']
-    room = data['room']
-    leave_room(room)
-    message = username + ' has left the room.'
-    handle_message(message)
+    
+    if user_obj in room_clients:
+    
+        leave_room(roomname)
+        
+        message = f"{username} has left the room."
+        handle_message(message, roomname)
+        print(room_clients)
+        room_clients.remove(user_obj)
+        db.session.commit()
+        print('removed')
+        print(room_clients)
+    
+    room_clients = listify(room_clients)
+    emit('roomlist_update', room_clients)
 
 
 @app.route("/update/<room_name>", methods=['GET', 'POST'])
