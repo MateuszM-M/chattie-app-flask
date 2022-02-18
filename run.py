@@ -1,4 +1,4 @@
 from chattie import app
 
 if __name__ == '__main__':
-    socketio.run(app, async_mode="eventlet")
+    socketio.run(app)

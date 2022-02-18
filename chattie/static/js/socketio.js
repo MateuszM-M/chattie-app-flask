@@ -1,20 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    let socket = io("/");
+    let mainSocket = io();
+    let socket = io("/chat");
     // main site functionalities
+    console.log(socket)
     try {
-    socket.on('userlist_update', function(clients) {
-        div = []
-        clients.forEach(function (item) {
-            div.push(`<div class="card bg-dark border-light p-1 m-1">${item}</div>`)
+        mainSocket.on('userlist_update', function(clients) {
+            div = []
+            clients.forEach(function (item) {
+                div.push(`<div class="card bg-dark border-light p-1 m-1">${item}</div>`)
+            });
+            try {
+                document.getElementById('users').innerHTML = div.join("")
+            } catch (e) {}
         });
-        try {
-            document.getElementById('users').innerHTML = div.join("")
-        } catch (e) {}
-    });
     } catch (e) {}
-
-
+    
+    
     // room functionalities
     try {
         function scrollDownMessages() {
@@ -24,17 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         scrollDownMessages();
 
-        socket.on('connect', () => {
-            socket.emit('join_room', {
-                'username':username,
-                'room': room })
-        });
-
-        socket.on('disconnect', () => {
-            socket.emit('leave_room', {
-                'username':username,
-                'room': room })
-        });
 
 
         document.getElementById('sendbutton').addEventListener('click', function() {
@@ -53,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             socket.on('roomlist_update', function(clients) {
+                console.log(clients)
                 div = []
                 clients.forEach(function (item) {
                     div.push(`<div class="card bg-dark border-light p-1 m-1">${item}</div>`)

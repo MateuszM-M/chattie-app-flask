@@ -1,10 +1,11 @@
+import time
+
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from flask_socketio import send, emit, join_room, leave_room
+from flask_socketio import emit, join_room, leave_room, send
 
 from chattie import app, bcrypt, db, socketio
-from chattie.forms import (CreateRoomForm, LoginForm,
-                           RegistrationForm)
+from chattie.forms import CreateRoomForm, LoginForm, RegistrationForm
 
 from .models import Message, Room, User, user_identifier
 
@@ -90,9 +91,10 @@ def create_room():
     return render_template('create_room.html', title='Create_room', form=form)
 
 
-@app.route("/r/<room_name>", methods=['GET', 'POST'])
+@app.route("/chat", methods=['GET', 'POST'])
 @login_required
-def room(room_name):
+def room():
+    room_name = request.args.get('room_name')
     room = Room.query.filter_by(name=room_name).first()
     messages = Message.query.filter_by(room=room)
     users = room.participants
@@ -137,7 +139,7 @@ def create_message(msg, room, username=None):
     return {'username': message.username, 'message': message.message}
 
 
-@socketio.on('message')
+@socketio.on('message', namespace="/chat")
 def handle_message(msg, room, username=None):
     message = create_message(msg, room, username)
     send(message, broadcast=True, to=room)
@@ -149,11 +151,12 @@ def listify(instrumented_list):
         new_list.append(user.username)
     return new_list
         
-        
-@socketio.on('join_room')
-def handle_join(data):
-    username = data['username']
-    roomname = data['room']
+   
+@socketio.on('connect', namespace="/chat")
+def handle_join():
+    username = current_user.username
+    # update to allow multi word room names
+    roomname = request.referrer.split("=")[1]
     user_obj = User.query.filter_by(username=username).first()
     room_obj = Room.query.filter_by(name=roomname).first()
     room_clients = room_obj.participants
@@ -161,7 +164,6 @@ def handle_join(data):
     join_room(roomname)
     
     if user_obj not in room_clients:
-        
         
         statement = user_identifier.insert().values(room_name=roomname,
                                                     user_username=username)
@@ -172,15 +174,15 @@ def handle_join(data):
         handle_message(message, roomname)
         
         
-    room_clients = listify(room_clients)
+    room_clients = listify(room_obj.participants)
     print(room_clients)
     emit('roomlist_update', room_clients)
     
     
-@socketio.on('leave_room')    
-def handle_leave(data):
-    username = data['username']
-    roomname = data['room']
+@socketio.on('disconnect', namespace="/chat")
+def handle_leave():
+    username = current_user.username
+    roomname = 'Mateusz'
     room_obj = Room.query.filter_by(name=roomname).first()
     user_obj = User.query.filter_by(username=username).first()
     room_clients = room_obj.participants
@@ -192,13 +194,11 @@ def handle_leave(data):
         
         message = f"{username} has left the room."
         handle_message(message, roomname)
-        print(room_clients)
+
         room_clients.remove(user_obj)
         db.session.commit()
-        print('removed')
-        print(room_clients)
     
-    room_clients = listify(room_clients)
+    room_clients = listify(room_obj.participants)
     emit('roomlist_update', room_clients)
 
 
