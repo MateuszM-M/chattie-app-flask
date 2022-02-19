@@ -175,14 +175,13 @@ def handle_join():
         
         
     room_clients = listify(room_obj.participants)
-    print(room_clients)
-    emit('roomlist_update', room_clients)
+    emit('roomlist_update', room_clients, broadcast=True, to=roomname)
     
     
 @socketio.on('disconnect', namespace="/chat")
 def handle_leave():
     username = current_user.username
-    roomname = 'Mateusz'
+    roomname = request.referrer.split("=")[1]
     room_obj = Room.query.filter_by(name=roomname).first()
     user_obj = User.query.filter_by(username=username).first()
     room_clients = room_obj.participants
@@ -195,11 +194,11 @@ def handle_leave():
         message = f"{username} has left the room."
         handle_message(message, roomname)
 
-        room_clients.remove(user_obj)
+        room_obj.participants.remove(user_obj)
         db.session.commit()
     
     room_clients = listify(room_obj.participants)
-    emit('roomlist_update', room_clients)
+    emit('roomlist_update', room_clients, braadcast=True, to=roomname)
 
 
 @app.route("/update/<room_name>", methods=['GET', 'POST'])

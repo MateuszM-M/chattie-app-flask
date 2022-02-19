@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // room functionalities
     try {
         function scrollDownMessages() {
-            messages.scrollTop = messages.scrollHeight;
-            myMessage.focus();
+            document.getElementById('messages').scrollTop = messages.scrollHeight;
+            document.getElementById('myMessage').focus();
         };
 
         scrollDownMessages();
@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 clients.forEach(function (item) {
                     div.push(`<div class="card bg-dark border-light p-1 m-1">${item}</div>`)
                 });
-                console.log(div)
                     document.getElementById('room_users').innerHTML = div.join("")
             });
         } catch (e) {
