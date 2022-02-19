@@ -9,7 +9,7 @@
 
         <div class="p-5">
             <p>Are you sure you want to delete {{room}}</p>
-            <form action="{{ url_for('delete_room', room_name=room.name) }}" method="POST">
+            <form action="{{ url_for('chats.delete_room', room_name=room.name) }}" method="POST">
             <input class="btn btn-danger" type="submit" value="Delete">
             </form>
         
