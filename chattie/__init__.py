@@ -1,10 +1,17 @@
+import os
+import pathlib
+
+from dotenv import load_dotenv
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
-from chattie.config import Config
+
+from chattie.config.dev import DevConfig
+from chattie.config.prod import ProdConfig
+from chattie.config.local_db import LocalConfig
 
 
 socketio = SocketIO()
@@ -13,11 +20,14 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
+env_path = pathlib.Path(__file__).parent.resolve() / 'config/.env'
+load_dotenv(dotenv_path=env_path)
+config = os.environ.get("FLASK_CONFIG_MODULE")
 
 
-def create_app(config_class=Config):
+def create_app(config_class=DevConfig):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(DevConfig)
     
     socketio.init_app(app)
     db.init_app(app)
