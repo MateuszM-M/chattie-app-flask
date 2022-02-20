@@ -1,16 +1,14 @@
 from datetime import datetime
-from chattie import db, login_manager
-from flask_login import UserMixin
-from sqlalchemy import Table,  Column, Integer, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from flask_login import UserMixin
+
+from chattie import db, login_manager
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 user_identifier = db.Table('user_identifier',
     db.Column('room_name', db.String(20), db.ForeignKey('room.name')),
@@ -18,55 +16,124 @@ user_identifier = db.Table('user_identifier',
 )
 
 
-class User(db.Model, UserMixin):
-    __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
-    password = db.Column(db.String(60), nullable=False)
-    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+class TimestampMixin():
+    """
+    Timestamp mixin
+    ...
+    Attributes
+    created : creation object date time
+    updated : update object date time
+    """
+    created = db.Column(
+        db.DateTime, 
+        nullable=False, 
+        default=datetime.utcnow)
+    updated = db.Column(db.DateTime, 
+                        onupdate=datetime.utcnow)
 
-    # participates_in = db.Column(db.Integer, db.ForeignKey('room.id'))
-    room_id = db.Column(db.Integer, db.ForeignKey('room.id'))
-    message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
+
+class User(db.Model, UserMixin, TimestampMixin):
+    """
+    DB model to represent user.
+    ...
     
-    # participates_in = db.relationship('Room', secondary=AssociationTable)
-    rooms = db.relationship('Room', foreign_keys=[room_id])
-    messages = db.relationship('Message', foreign_keys=[message_id])
+    Attributes
+    ----------
+    __tablename__ : sets table name
+    id : id for user
+    username : name for user
+    email : user's email to log in
+    image_file : image to upload in profile
+    password : user's password
+    created : user register time
+    rooms : relationship, one user can 
+    messages : relationship, one user can send many messages,
+               message can have only one author
+    """
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, 
+                   primary_key=True)
+    username = db.Column(db.String(20), 
+                         unique=True, 
+                         nullable=False)
+    email = db.Column(db.String(120),
+                      unique=True, 
+                      nullable=False)
+    image_file = db.Column(db.String(20), 
+                           nullable=False, 
+                           default='default.jpg')
+    password = db.Column(db.String(60), 
+                         nullable=False)
+    rooms_created = db.relationship('Room', 
+                                    backref='creator', 
+                                    lazy=True)
+    messages_sent = db.relationship('Message', 
+                                    backref='author', 
+                                    lazy=True)
     
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User('{self.username}','{self.email}')"
     
 
-class Room(db.Model):
+class Room(db.Model, TimestampMixin):
+    """
+    DB model to represent chat room.
+    ...
+    
+    Attributes
+    ----------
+    __tablename__ : sets table name
+    id : id for room
+    name : chat room name
+    creator_id : foreign key, id of creator user
+    participants : relationship, room can have many users as participants
+                   many users can participate in many rooms
+    messages : relationship, one room can have many messages,
+               message can only be in one room
+
+    """
     __tablename__ = 'room'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False, unique=True)
-    
-    # participant_names = db.Column(db.Integer, db.ForeignKey('user.username'))
-    message_id = db.Column(db.Integer, db.ForeignKey('message.id'))
-    
-    participants = db.relationship('User', secondary=user_identifier)
-    messages = db.relationship('Message', foreign_keys=[message_id], cascade="all,delete")
-    
-    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    id = db.Column(db.Integer, 
+                   primary_key=True)
+    name = db.Column(db.String(20), 
+                     nullable=False, 
+                     unique=True)
+    creator_id = db.Column(db.Integer, 
+                           db.ForeignKey('user.id'), 
+                           nullable=False)
+    participants = db.relationship('User', 
+                                   secondary=user_identifier)
+    messages = db.relationship('Message', 
+                               backref='room_with_messages',
+                               lazy=True, 
+                               cascade="all, delete")
     
     def __repr__(self):
         return self.name
 
 
-class Message(db.Model):
-    __tablename__ = 'message'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), db.ForeignKey('user.username'))
-    roomname = db.Column(db.String(20), db.ForeignKey('room.name'), nullable=False)
-    message = db.Column(db.String(1000), nullable=False)
-    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+class Message(db.Model, TimestampMixin):
+    """
+    DB model to represent message.
+    ...
     
-    user = db.relationship('User', foreign_keys=[username])
-    room = db.relationship('Room', foreign_keys=[roomname])
-
+    Attributes
+    ----------
+    __tablename__ : sets table name
+    id : id for message
+    message : message value
+    username : foreign key, author name
+    roomname : foreign key, room that stores message
+    """
+    __tablename__ = 'message'
+    id = db.Column(db.Integer, 
+                   primary_key=True)
+    message = db.Column(db.String(1000), 
+                        nullable=False)
+    username = db.Column(db.String, 
+                         db.ForeignKey('user.username'))
+    roomname = db.Column(db.String, 
+                         db.ForeignKey('room.name'), nullable=False)
+    
     def __repr__(self):
         return f"('{self.username}': '{self.message}')"

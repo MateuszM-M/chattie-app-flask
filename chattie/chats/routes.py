@@ -32,7 +32,7 @@ def create_room():
 def room():
     room_name = request.args.get('room_name')
     room = Room.query.filter_by(name=room_name).first()
-    messages = Message.query.filter_by(room=room)
+    messages = Message.query.filter_by(roomname=room_name)
     users = room.participants
     return render_template('room.html', 
                            title=room.name,
