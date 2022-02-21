@@ -25,9 +25,9 @@ load_dotenv(dotenv_path=env_path)
 config = os.environ.get("FLASK_CONFIG_MODULE")
 
 
-def create_app(config_class=DevConfig):
+def create_app(config_class=config):
     app = Flask(__name__)
-    app.config.from_object(DevConfig)
+    app.config.from_object(config)
     
     socketio.init_app(app)
     db.init_app(app)

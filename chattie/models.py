@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask_login import UserMixin
+from sqlalchemy.orm import backref
 
 from chattie import db, login_manager
 
@@ -43,12 +44,12 @@ class User(db.Model, UserMixin, TimestampMixin):
     id : id for user
     username : name for user
     email : user's email to log in
-    image_file : image to upload in profile
     password : user's password
     created : user register time
     rooms : relationship, one user can 
     messages : relationship, one user can send many messages,
                message can have only one author
+    profile : relationship, one to one with profile table
     """
     __tablename__ = 'user'
     id = db.Column(db.Integer, 
@@ -70,9 +71,50 @@ class User(db.Model, UserMixin, TimestampMixin):
     messages_sent = db.relationship('Message', 
                                     backref='author', 
                                     lazy=True)
+    profile = db.relationship('Profile',
+                              backref=backref('user',
+                                              uselist=False),
+                              lazy=True,)
     
     def __repr__(self):
         return f"User('{self.username}','{self.email}')"
+    
+    
+class Profile(db.Model):
+    """
+    DB model to represent profile.
+    ...
+    
+    Attributes
+    ----------
+    __tablename__ : sets table name
+    id : id for profile
+    first_name : first_name of profile
+    last_name : last_name of profile
+    country : country of profile
+    city : city of profile
+    email : user's email to log in
+    image_file : image file of profile
+    about : area to write more self
+    user_id : foreign key, id of linked user
+    """
+    __tablename__ = 'profile'
+    id = db.Column(db.Integer, 
+                   primary_key=True)
+    first_name = db.Column(db.String(30))
+    last_name = db.Column(db.String(30))
+    country = db.Column(db.String(30))
+    city = db.Column(db.String(30))
+    image_file = db.Column(db.String(20), 
+                           nullable=False, 
+                           default='default.jpg')
+    about = db.Column(db.Text)
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('user.id'),
+                        nullable=False)
+    
+    def __repr__(self):
+        return f"Profile('{self.id}','{self.first_name}', '{self.last_name}')"
     
 
 class Room(db.Model, TimestampMixin):

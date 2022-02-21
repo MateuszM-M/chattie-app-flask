@@ -1,6 +1,6 @@
 from chattie import bcrypt, db
+from chattie.models import User, Profile
 from chattie.users.forms import LoginForm, RegistrationForm
-from chattie.models import User
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -16,8 +16,9 @@ def login():
     if login_form.validate_on_submit():
         user = User.query.filter_by(email=login_form.email.data).first()
         if user and \
-        bcrypt.check_password_hash(user.password,
-                                   login_form.password.data):
+        bcrypt.check_password_hash(
+            user.password,
+            login_form.password.data):
             login_user(user)
             next_page = request.args.get('next')
             return redirect(next_page) \
@@ -51,6 +52,11 @@ def register():
             email=form.email.data,
             password=hashed_password)
         db.session.add(user)
+        db.session.commit()
+        user_id = User.query.filter_by(
+            username=form.username.data).first().id
+        profile = Profile(user_id=user_id)
+        db.session.add(profile)
         db.session.commit()
         flash(
             'Your account has been created! You are now able to log in',
