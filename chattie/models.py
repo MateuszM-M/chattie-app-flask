@@ -20,8 +20,9 @@ user_identifier = db.Table('user_identifier',
 class TimestampMixin():
     """
     Timestamp mixin
-    ...
+    
     Attributes
+    ---------
     created : creation object date time
     updated : update object date time
     """
@@ -36,7 +37,6 @@ class TimestampMixin():
 class User(db.Model, UserMixin, TimestampMixin):
     """
     DB model to represent user.
-    ...
     
     Attributes
     ----------
@@ -83,7 +83,6 @@ class User(db.Model, UserMixin, TimestampMixin):
 class Profile(db.Model):
     """
     DB model to represent profile.
-    ...
     
     Attributes
     ----------
@@ -120,7 +119,6 @@ class Profile(db.Model):
 class Room(db.Model, TimestampMixin):
     """
     DB model to represent chat room.
-    ...
     
     Attributes
     ----------
@@ -157,7 +155,6 @@ class Room(db.Model, TimestampMixin):
 class Message(db.Model, TimestampMixin):
     """
     DB model to represent message.
-    ...
     
     Attributes
     ----------

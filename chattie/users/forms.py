@@ -6,6 +6,13 @@ from wtforms.validators import (DataRequired, Email, EqualTo, Length,
 
 
 class RegistrationForm(FlaskForm):
+    """
+    Form to regiser a user.
+    
+    Requires passing username, email, password,
+    confirm passwrod and submit.
+    Username and email have to be unique.
+    """
     username = StringField('Username',
                            validators=[DataRequired(), 
                                        Length(min=2, max=20)])
@@ -20,12 +27,14 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
+        """Check if username is unique."""
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError(
                 'That username is taken. Please choose a different one.')
 
     def validate_email(self, email):
+        """Check if email is unique."""
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError(
@@ -33,6 +42,10 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    """
+    Form to log in.
+    Includes email, password and submit.
+    """
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', 
