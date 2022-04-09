@@ -205,7 +205,6 @@ def delete_room(room_name):
         flash(f"{room.name} has been deleted!", 'success')
         return redirect(url_for('main.home'))
     
-    
     return render_template('delete_room.html',
                            title=f"delete {room.name}",
                            room=room)

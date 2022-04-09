@@ -1,0 +1,13 @@
+[run]
+source = 
+    chattie
+    chattie/chats
+    chattie/main
+    chattie/users
+
+omit = 
+    *__init__*
+    */tests/*
+    */config/*
+    *factories*
+    

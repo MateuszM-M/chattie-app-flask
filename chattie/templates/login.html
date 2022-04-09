@@ -14,37 +14,46 @@
 
                     <div class="form-floating my-2">
 
-                    {% if login_form.email.errors %}
-                        {{ login_form.email(class="form-control bg-dark is-invalid text-white", placeholder="Email") }}
-                        <div class="invalid-feedback">
-                            {% for error in login_form.email.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ login_form.email(class="form-control bg-dark text-white", placeholder="Email") }}
-                    {% endif %}
-                    {{ login_form.email.label(class="form-control-label") }}
+                        {% if login_form.email.errors %}
+                            {{ login_form.email(class="form-control bg-dark is-invalid text-white", placeholder="Email") }}
+                            <div class="invalid-feedback">
+                                {% for error in login_form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ login_form.email(class="form-control bg-dark text-white", placeholder="Email") }}
+                        {% endif %}
+                        {{ login_form.email.label(class="form-control-label") }}
 
                     </div>
 
                     <div class="form-floating my-2">
                     
-                    {% if login_form.password.errors %}
-                        {{ login_form.password(class="form-control bg-dark is-invalid text-white", placeholder="Password") }}
-                        <div class="invalid-feedback">
-                            {% for error in login_form.password.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ login_form.password(class="form-control bg-dark text-white", placeholder="Password") }}
-                    {% endif %}
-                    {{ login_form.password.label(class="form-control-label") }}
+                        {% if login_form.password.errors %}
+                            {{ login_form.password(class="form-control bg-dark is-invalid text-white", placeholder="Password") }}
+                            <div class="invalid-feedback">
+                                {% for error in login_form.password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ login_form.password(class="form-control bg-dark text-white", placeholder="Password") }}
+                        {% endif %}
+                        {{ login_form.password.label(class="form-control-label") }}
 
                     </div>
                     {{ login_form.submit(class="w-100 btn btn-lg btn-primary mt-2") }}
 
+                    <div>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {{ message }}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
 
                     <div class="mx-auto mt-4">
                         <div class="text-center my-2">

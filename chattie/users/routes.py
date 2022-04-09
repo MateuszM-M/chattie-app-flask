@@ -24,13 +24,13 @@ def login():
         bcrypt.check_password_hash(
             user.password,
             login_form.password.data):
+            
             login_user(user)
             next_page = request.args.get('next')
             return redirect(next_page) \
             if next_page else redirect(url_for('main.home'))
         else:
-            flash(
-                'Login Unsuccessful. Please check email and password',
+            flash('Login Unsuccessful. Please check email and password',
                 'danger')
     return render_template('login.html', 
                            title='login', 
@@ -72,8 +72,7 @@ def register():
         profile = Profile(user_id=user_id)
         db.session.add(profile)
         db.session.commit()
-        flash(
-            'Your account has been created! You are now able to log in',
+        flash('Your account has been created! You are now able to log in',
             'success')
         return redirect(url_for('users.login'))
     return render_template('register.html',

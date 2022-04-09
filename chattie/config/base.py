@@ -12,4 +12,5 @@ class BaseConfig:
     Other configs inherit from here.
     """
     FLASK_APP='run.py'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     
