@@ -1,0 +1,156 @@
+{% extends "main.html" %}
+{% block content %}
+
+
+
+<div class="container d-flex justify-content-around my-auto">
+    <div class="card col-md-6 bg-dark">
+        <div class="card text-center bg-dark">
+            <h3 class=" fw-normal card-text card-header ">Create a room</h3>
+        </div>
+
+        <div class="p-5">
+            <form action="" method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+
+
+                    <div class="form-floating my-2">
+                        {% if form.username.errors %}
+                            {{ form.username(class="form-control bg-dark is-invalid text-white", placeholder="Username") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.username(class="form-control bg-dark text-white", placeholder="Username") }}
+                        {% endif %}
+                        {{ form.username.label(class="form-control-label") }}
+                    </div>
+
+
+
+                    <div class="form-floating my-2">
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control bg-dark is-invalid text-white", placeholder="Email") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control bg-dark text-white", placeholder="email") }}
+                        {% endif %}
+                        {{ form.email.label(class="form-control-label") }}
+                    </div>
+
+
+
+                    <div class="form-floating my-2">
+                        {% if form.first_name.errors %}
+                            {{ form.first_name(class="form-control bg-dark is-invalid text-white", placeholder="First name") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.first_name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.first_name(class="form-control bg-dark text-white", placeholder="First name") }}
+                        {% endif %}
+                        {{ form.first_name.label(class="form-control-label") }}
+                    </div>
+
+
+
+                    <div class="form-floating my-2">
+                        {% if form.last_name.errors %}
+                            {{ form.last_name(class="form-control bg-dark is-invalid text-white", placeholder="Last name") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.last_name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.last_name(class="form-control bg-dark text-white", placeholder="Last name") }}
+                        {% endif %}
+                        {{ form.last_name.label(class="form-control-label") }}
+                    </div>
+
+
+                    <div class="form-floating my-2">
+                        {% if form.country.errors %}
+                            {{ form.country(class="form-control bg-dark is-invalid text-white", placeholder="Country") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.country.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.country(class="form-control bg-dark text-white", placeholder="country") }}
+                        {% endif %}
+                        {{ form.country.label(class="form-control-label") }}
+                    </div>
+
+
+                    <div class="form-floating my-2">
+                        {% if form.city.errors %}
+                            {{ form.city(class="form-control bg-dark is-invalid text-white", placeholder="City") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.city.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.city(class="form-control bg-dark text-white", placeholder="city") }}
+                        {% endif %}
+                        {{ form.city.label(class="form-control-label") }}
+                    </div>
+
+
+
+                    <div class="form-floating my-2">
+                        {% if form.about.errors %}
+                            {{ form.about(class="form-control bg-dark is-invalid text-white", placeholder="About") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.about.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.about(class="form-control bg-dark text-white", placeholder="About") }}
+                        {% endif %}
+                        {{ form.about.label(class="form-control-label") }}
+                    </div>
+
+
+                        {{ form.image_file.label }}: 
+                        {% if form.image_file.errors %}
+                            {{ form.image_file() }}
+                            <div class="invalid-feedback">
+                                {% for error in form.image_file.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.image_file() }}
+                        {% endif %}
+
+
+
+
+
+                <div class='text-center'>
+                    {{ form.submit(class="btn btn-primary mt-2") }}
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}

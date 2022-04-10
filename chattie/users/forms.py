@@ -1,6 +1,7 @@
 from chattie.models import User
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, PasswordField, StringField, SubmitField
+from flask_wtf.file import FileField, FileRequired
+from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 ValidationError)
 
@@ -51,3 +52,21 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', 
                              validators=[DataRequired()])
     submit = SubmitField('Login')
+    
+
+class EditUserProfile(FlaskForm):
+    """
+    Form to edit elementary user data and profile
+    """
+    username = StringField('Username',
+                           validators=[DataRequired(), 
+                                       Length(min=2, max=20)])
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    first_name = StringField('First name')
+    last_name = StringField('Last name')
+    country = StringField('Country')
+    city = StringField('City')
+    about = TextAreaField('About')
+    image_file = FileField('Profile picture')
+    submit = SubmitField('Save changes')

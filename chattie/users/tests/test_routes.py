@@ -73,3 +73,81 @@ def test_invalid_register(client):
                   follow_redirects=True)
       assert len(User.query.all()) == 0
       assert response.request.path == "/register"
+      
+      
+def test_get_edit_profile_view(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.get("/edit-profile")
+      assert response.status_code == 200
+      
+      
+def test_valid_edit_profile(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.post("/edit-profile",
+                             data={
+                                   'username': user1.username,
+                                   'email': user1.email,
+                                   'first_name': 'Name',
+                                   'last_name': 'Surname',
+                                   'country': 'Poland',
+                                   'city': 'Warsaw',
+                                   'about': "I'll be back"},
+                                   follow_redirects=True)
+      assert response.status_code == 200
+      assert response.request.path == "/"
+      assert profile1.first_name == 'Name'
+      assert profile1.last_name == 'Surname'
+      assert profile1.country == 'Poland'
+      assert profile1.city == 'Warsaw'
+      assert profile1.about == "I'll be back"
+      
+      
+def test_valid_edit_user(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.post("/edit-profile",
+                             data={
+                                   'username': 'New_username',
+                                   'email': 'mail@example.com'},
+                                   follow_redirects=True)
+      assert response.status_code == 200
+      assert response.request.path == "/"
+      assert user1.username == "New_username"
+      assert user1.email == "mail@example.com"
+      
+
+def test_valid_edit_user_and_profile(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.post("/edit-profile",
+                             data={
+                                   'username': 'New_username',
+                                   'email': 'mail@example.com',
+                                   'first_name': 'Name',
+                                   'last_name': 'Surname',
+                                   'country': 'Poland',
+                                   'city': 'Warsaw',
+                                   'about': "I'll be back"},
+                                   follow_redirects=True)
+      assert response.status_code == 200
+      assert response.request.path == "/"
+      assert user1.username == "New_username"
+      assert user1.email == "mail@example.com"
+      assert profile1.first_name == 'Name'
+      assert profile1.last_name == 'Surname'
+      assert profile1.country == 'Poland'
+      assert profile1.city == 'Warsaw'
+      assert profile1.about == "I'll be back"
+      
+
+def test_invalid_edit_user(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      old_name = user1.username
+      old_email = user1.email
+      response = client.post("/edit-profile",
+                             data={
+                                   'username': '',
+                                   'email': ''},
+                                   follow_redirects=True)
+      assert response.status_code == 200
+      assert response.request.path == "/edit-profile"
+      assert user1.username == old_name
+      assert user1.email == old_email

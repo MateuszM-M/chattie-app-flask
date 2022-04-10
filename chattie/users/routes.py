@@ -1,9 +1,8 @@
 from chattie import bcrypt, db
 from chattie.models import Profile, User
-from chattie.users.forms import LoginForm, RegistrationForm
+from chattie.users.forms import EditUserProfile, LoginForm, RegistrationForm
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-
 
 users = Blueprint('users', __name__)
 
@@ -81,10 +80,38 @@ def register():
 
 
 @login_required
-@users.route("/edit-profile")
+@users.route("/edit-profile", methods=['GET', 'POST'])
 def edit_profile():
     """Handles edit profile."""
-    return "<h1>Page for editing profile</h1>"
+    
+    user = User.query.filter_by(id=current_user.id).first()
+    profile = Profile.query.filter_by(id=current_user.id).first()
+    form = EditUserProfile()
+    
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.email.data
+        profile.first_name = form.first_name.data
+        profile.last_name = form.last_name.data
+        profile.country = form.country.data
+        profile.city = form.city.data
+        profile.about = form.about.data
+        profile.image_file = form.image_file.data
+        db.session.commit()
+        flash(f"Your profile has been updated!", 'success')
+        return redirect(url_for('main.home'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.first_name.data = profile.first_name
+        form.last_name.data = profile.last_name
+        form.country.data = profile.country
+        form.city.data = profile.city
+        form.about.data = profile.about
+        form.image_file.data = profile.image_file
+    return render_template('edit_profile.html',
+                           form=form,
+                           title='Edit profile')
 
 
 @login_required
