@@ -1,9 +1,12 @@
 from chattie.models import User
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
-from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
+from wtforms import (BooleanField, PasswordField, StringField, SubmitField,
+                     TextAreaField)
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
                                 ValidationError)
+from chattie import bcrypt
 
 
 class RegistrationForm(FlaskForm):
@@ -56,7 +59,7 @@ class LoginForm(FlaskForm):
 
 class EditUserProfile(FlaskForm):
     """
-    Form to edit elementary user data and profile
+    Form to edit elementary user data and profile.
     """
     username = StringField('Username',
                            validators=[DataRequired(), 
@@ -70,3 +73,23 @@ class EditUserProfile(FlaskForm):
     about = TextAreaField('About')
     image_file = FileField('Profile picture')
     submit = SubmitField('Save changes')
+
+
+class ChangePasswordForm(FlaskForm):
+    """
+    Form to change password by logged in user.
+    """
+    old_password = PasswordField('Old password', 
+                             validators=[DataRequired()])
+    new_password = PasswordField('New password', 
+                             validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(),
+                                                 EqualTo('new_password')])
+    submit = SubmitField('Change password')
+    
+    def validate_old_password(self, old_password):
+        """Check if username is unique."""
+        user = User.query.filter_by(username=current_user.username).first()
+        if not bcrypt.check_password_hash(user.password, old_password.data):
+            raise ValidationError('Incorrect old password.')

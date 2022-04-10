@@ -1,6 +1,7 @@
 from chattie import bcrypt, db
 from chattie.models import Profile, User
-from chattie.users.forms import EditUserProfile, LoginForm, RegistrationForm
+from chattie.users.forms import (ChangePasswordForm, EditUserProfile,
+                                 LoginForm, RegistrationForm)
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -115,10 +116,21 @@ def edit_profile():
 
 
 @login_required
-@users.route("/change-password")
+@users.route("/change-password", methods=['GET', 'POST'])
 def change_password():
     """Handles change password view."""
-    return "<h1>Change password page</h1>"
+    user = User.query.filter_by(id=current_user.id).first()
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        current_user.password = bcrypt.generate_password_hash(
+            form.new_password.data).decode('utf-8')
+        db.session.commit()
+        flash(f"Your password has been changed successfully.", 'success')
+        return redirect(url_for('main.home'))
+    return render_template('change_password.html',
+                           form=form,
+                           title='Change password')
+
 
 
 @login_required
