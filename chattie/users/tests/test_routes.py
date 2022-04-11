@@ -151,3 +151,62 @@ def test_invalid_edit_user(auth, client, user1, profile1):
       assert response.request.path == "/edit-profile"
       assert user1.username == old_name
       assert user1.email == old_email
+
+
+def test_get_change_password_view(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.get("/change-password")
+      assert response.status_code == 200
+      
+      
+def test_valid_change_password(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.post("/change-password",
+                             data={
+                                   'old_password': 'User1Pass!',
+                                   'new_password': 'User1Pass!NEW',
+                                   'confirm_password': 'User1Pass!NEW',
+                             },
+                             follow_redirects=True)
+      assert response.status_code == 200
+      assert response.request.path == "/"
+      client.get('/logout', follow_redirects=True)
+      auth.login(user1.email, 'User1Pass!NEW')
+      assert response.status_code == 200
+      assert response.request.path == "/"
+      
+      
+def test_invalid_old_password(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.post("/change-password",
+                             data={
+                                   'old_password': 'User1Pass!INCORRECT',
+                                   'new_password': 'User1Pass!NEW',
+                                   'confirm_password': 'User1Pass!NEW',
+                             },
+                             follow_redirects=True)
+      assert response.request.path == "/change-password"
+      client.get('/logout', follow_redirects=True)
+      response = auth.login(user1.email, 'User1Pass!INCORRECT')
+      assert response.request.path == "/login"
+      response = auth.login(user1.email, 'User1Pass!')
+      assert response.request.path == "/"
+      
+
+def test_invalid_confirm_password(auth, client, user1, profile1):
+      auth.login(user1.email, 'User1Pass!')
+      response = client.post("/change-password",
+                             data={
+                                   'old_password': 'User1Pass!',
+                                   'new_password': 'User1Pass!NEW',
+                                   'confirm_password': 'User1Pass!INCORRECT',
+                             },
+                             follow_redirects=True)
+      assert response.request.path == "/change-password"
+      client.get('/logout', follow_redirects=True)
+      response = auth.login(user1.email, 'User1Pass!NEW')
+      assert response.request.path == "/login"
+      response = auth.login(user1.email, 'User1Pass!INCORRECT')
+      assert response.request.path == "/login"
+      response = auth.login(user1.email, 'User1Pass!')
+      assert response.request.path == "/"
