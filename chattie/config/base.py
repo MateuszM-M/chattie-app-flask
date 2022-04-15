@@ -1,6 +1,8 @@
+import os
 import pathlib
 
 from dotenv import load_dotenv
+
 
 env_path = pathlib.Path(__file__).parent.resolve() / '.env'
 load_dotenv(dotenv_path=env_path)
@@ -20,5 +22,5 @@ class BaseConfig:
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get('EMAIL_USER')
-    MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
