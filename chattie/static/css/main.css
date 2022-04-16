@@ -46,3 +46,28 @@ input:-webkit-autofill:focus {
 .cursor-pointer {
     cursor: pointer;;
 }
+
+ul {
+    list-style-type: none;
+}
+
+.success {
+    border: 1px solid green; 
+    border-radius: 3px;
+    color: green;
+    padding: 3px;
+}
+
+.info {
+    border: 1px solid blue; 
+    border-radius: 3px;
+    color: blue;
+    padding: 3px;
+}
+
+.danger {
+    border: 1px solid red; 
+    border-radius: 3px;
+    color: red;
+    padding: 3px;
+}
