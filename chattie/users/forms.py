@@ -89,7 +89,7 @@ class ChangePasswordForm(FlaskForm):
     submit = SubmitField('Change password')
     
     def validate_old_password(self, old_password):
-        """Check if username is unique."""
+        """Check if password is correct."""
         user = User.query.filter_by(username=current_user.username).first()
         if not bcrypt.check_password_hash(user.password, old_password.data):
             raise ValidationError('Incorrect old password.')
@@ -101,6 +101,7 @@ class RequestResetForm(FlaskForm):
     submit = SubmitField('Request Password Reset')
 
     def validate_email(self, email):
+        """Check if user with given email exists."""
         user = User.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError(
