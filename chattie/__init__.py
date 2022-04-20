@@ -44,9 +44,11 @@ def create_app(config_class=config):
     from chattie.chats.routes import chats
     from chattie.main.routes import main
     from chattie.users.routes import users
+    from chattie.errors.handlers import errors
 
     app.register_blueprint(users)
     app.register_blueprint(main)
     app.register_blueprint(chats)
+    app.register_blueprint(errors)
     
     return app
