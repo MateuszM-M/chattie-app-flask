@@ -117,7 +117,7 @@ class Profile(db.Model):
     country = db.Column(db.String(30))
     city = db.Column(db.String(30))
     image_file = db.Column(db.String(20), 
-                           default='default.jpg')
+                           default='profile_pics/default.png')
     about = db.Column(db.Text)
     user_id = db.Column(db.Integer,
                         db.ForeignKey('user.id'),

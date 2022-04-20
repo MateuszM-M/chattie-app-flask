@@ -5,7 +5,7 @@ from chattie.users.forms import (ChangePasswordForm, EditUserProfile,
                                  ResetPasswordForm)
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from chattie.users.utils import send_reset_email
+from chattie.users.utils import send_reset_email, save_picture
 
 users = Blueprint('users', __name__)
 
@@ -99,7 +99,8 @@ def edit_profile():
         profile.country = form.country.data
         profile.city = form.city.data
         profile.about = form.about.data
-        profile.image_file = form.image_file.data
+        picture_file = save_picture(form.image_file.data)
+        profile.image_file = picture_file
         db.session.commit()
         flash(f"Your profile has been updated!", 'success')
         return redirect(url_for('main.home'))
@@ -112,8 +113,10 @@ def edit_profile():
         form.city.data = profile.city
         form.about.data = profile.about
         form.image_file.data = profile.image_file
+    image_file = url_for('static', filename='profile_pics/' + profile.image_file)
     return render_template('edit_profile.html',
                            form=form,
+                           image_file=image_file,
                            title='Edit profile')
 
 

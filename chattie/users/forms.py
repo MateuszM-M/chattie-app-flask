@@ -1,7 +1,7 @@
 from chattie.models import User
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import (BooleanField, PasswordField, StringField, SubmitField,
                      TextAreaField)
 from wtforms.validators import (DataRequired, Email, EqualTo, Length,
@@ -71,7 +71,8 @@ class EditUserProfile(FlaskForm):
     country = StringField('Country')
     city = StringField('City')
     about = TextAreaField('About')
-    image_file = FileField('Profile picture')
+    image_file = FileField('Profile picture',
+                           validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Save changes')
 
 
