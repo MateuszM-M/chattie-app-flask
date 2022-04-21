@@ -1,3 +1,5 @@
+from urllib.parse import unquote_plus
+
 from chattie import db, socketio
 from chattie.chats.forms import CreateRoomForm
 from chattie.main.routes import clients
@@ -104,8 +106,7 @@ def handle_join():
     updaets room user list on every client in the room.
     """
     username = current_user.username
-    # update to allow multi word room names
-    roomname = request.referrer.split("=")[1]
+    roomname = unquote_plus(request.referrer.split("/chat?room_name=")[1])
     user_obj = User.query.filter_by(username=username).first()
     room_obj = Room.query.filter_by(name=roomname).first()
     room_clients = room_obj.participants
@@ -139,7 +140,7 @@ def handle_leave():
     Updates room user list to all clients in room.
     """
     username = current_user.username
-    roomname = request.referrer.split("=")[1]
+    roomname = unquote_plus(request.referrer.split("/chat?room_name=")[1])
     room_obj = Room.query.filter_by(name=roomname).first()
     user_obj = User.query.filter_by(username=username).first()
     room_clients = room_obj.participants
