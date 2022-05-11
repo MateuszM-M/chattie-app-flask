@@ -11,12 +11,17 @@
 Chat app created in flask for learning purpose. My main focus was to create my first flask app and learn pytest.
 
 
+![Alt text](chattie/static/screens/login.png "Login Page")
+![Alt text](chattie/static/screens/lobby.png "Lobby")
+![Alt text](chattie/static/screens/room.png "Room")
+
 ## Technologies
 
  - Python
  - Flask
  - Pytest
  - Factory-boy
+ - JavaScript
  - Postgreql
  - Heroku
 
