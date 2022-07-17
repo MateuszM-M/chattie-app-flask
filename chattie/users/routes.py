@@ -39,6 +39,18 @@ def login():
                            login_form=login_form)
 
 
+@users.route("/auto-login", methods=['POST', 'GET'])
+def login_without_credentials():
+    """
+    View to handle login without credentials
+    """
+    user = User.query.filter_by(email="testchattie@testchattie.com").first()
+        
+    login_user(user)
+    return redirect(url_for('main.home'))
+
+
+
 @login_required
 @users.route("/logout")
 def logout():

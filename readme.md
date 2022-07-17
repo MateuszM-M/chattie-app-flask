@@ -61,7 +61,7 @@ create venv and enter it `python -m venv venv`, `venv\scripts\activate`
 
 assign FLASK_APP env var `set FLASK_APP=run.py`, 
 
-create db `flask main create_db`
+create db and test user `flask main create_db`
 
 run app `python run.py` or `flask run`
 
